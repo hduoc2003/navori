@@ -5,6 +5,7 @@ authors = []
 
 [addresses]
 cpu_2_addr = "_"
+lib_addr = "_"
 
 [dev-addresses]
 cpu_2_addr = "1725fb72ba62d830193fe57a932b5071c9718a44e40891e4067a2fe0e78f4d0f"
