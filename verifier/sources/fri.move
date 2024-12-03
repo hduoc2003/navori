@@ -1,4 +1,5 @@
 module verifier_addr::fri {
+    use std::signer::address_of;
     use std::vector;
 
     friend verifier_addr::fri_statement_contract;
@@ -6,7 +7,7 @@ module verifier_addr::fri {
     friend verifier_addr::merkle_verifier;
     friend verifier_addr::merkle_statement_contract;
 
-    struct Fri has key, store {
+    struct Fri has key, store, drop {
         fri: vector<u256>
     }
 
@@ -31,5 +32,9 @@ module verifier_addr::fri {
     public fun view_fri(signer: address): vector<u256> acquires Fri {
         let Fri { fri } = move_from<Fri>(signer);
         fri
+    }
+
+    public entry fun reset_fri(signer: &signer) acquires Fri {
+        move_from<Fri>(address_of(signer));
     }
 }
