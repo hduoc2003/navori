@@ -313,6 +313,22 @@ module verifier_addr::stark_verifier_6 {
         cpu_oods_6::init_data_type(signer);
     }
 
+    public(friend) fun reset_data(signer: &signer) acquires VpCheckpoint, CtxCache, CfflCheckpoint, OccCheckpoint {
+        if (exists<VpCheckpoint>(address_of(signer))) {
+            move_from<VpCheckpoint>(address_of(signer));
+        };
+        if (exists<CtxCache>(address_of(signer))) {
+            move_from<CtxCache>(address_of(signer));
+        };
+        if (exists<CfflCheckpoint>(address_of(signer))) {
+            move_from<CfflCheckpoint>(address_of(signer));
+        };
+        if (exists<OccCheckpoint>(address_of(signer))) {
+            move_from<OccCheckpoint>(address_of(signer));
+        };
+        cpu_oods_6::reset_data(signer);
+    }
+
     // Adjusts the query indices and generates evaluation points for each query index.
     // The operations above are independent but we can save gas by combining them as both
     // operations require us to iterate the queries array.

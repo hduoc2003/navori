@@ -98,6 +98,21 @@ module cpu_addr::cpu_oods_6 {
         };
     }
 
+    public fun reset_data(signer: &signer) acquires FbCheckpoint2Cache, FbCheckpoint, FbCache, OpiCache {
+        if (exists<FbCheckpoint>(address_of(signer))) {
+            move_from<FbCheckpoint>(address_of(signer));
+        };
+        if (exists<FbCache>(address_of(signer))) {
+            move_from<FbCache>(address_of(signer));
+        };
+        if (exists<FbCheckpoint2Cache>(address_of(signer))) {
+            move_from<FbCheckpoint2Cache>(address_of(signer));
+        };
+        if (exists<OpiCache>(address_of(signer))) {
+            move_from<OpiCache>(address_of(signer));
+        };
+    }
+
     //  Builds and sums boundary constraints that check that the prover provided the proper evaluations
     //  out of domain evaluations for the trace and composition columns.
     //  The inputs to this function are:
@@ -433,16 +448,16 @@ module cpu_addr::cpu_oods_6 {
     }
 
     // Data of the function `fallback`
-    struct FbCheckpoint has key {
+    struct FbCheckpoint has key, drop {
         inner: u8
     }
 
-    struct FbCache has key {
+    struct FbCache has key, drop {
         n_queries: u64,
         batch_inverse_array: vector<u256>
     }
 
-    struct FbCheckpoint2Cache has key {
+    struct FbCheckpoint2Cache has key, drop {
         fri_queue: u64,
         fri_queue_end: u64,
         trace_query_responses: u64,
@@ -452,7 +467,7 @@ module cpu_addr::cpu_oods_6 {
     }
 
     // Data of the function `oods_prepare_inverses`
-    struct OpiCache has key {
+    struct OpiCache has key, drop {
         checkpoint: u8,
         partial_product: u256,
         products_ptr: u64,
