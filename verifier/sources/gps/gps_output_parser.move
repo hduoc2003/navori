@@ -257,7 +257,7 @@ module verifier_addr::gps_output_parser {
             NODE_STACK_ITEM_SIZE * (node_stack_len - 1) + NODE_STACK_OFFSET_END
         );
         let new_stack_len = node_stack_len - n_nodes;
-        let node_start = 1 + new_stack_len * NODE_STACK_ITEM_SIZE;
+        let node_start = new_stack_len * NODE_STACK_ITEM_SIZE;
         let new_node_hash = bytes32_to_u256(
             keccak256(vec_to_bytes_le(&slice(node_stack, node_start, node_start + n_nodes * 2)))
         );
