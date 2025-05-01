@@ -2,7 +2,7 @@ module verifier_addr::stark_verifier_7 {
     use std::signer::address_of;
     use std::vector::{append, borrow, length, slice, borrow_mut};
     use aptos_std::aptos_hash::keccak256;
-    use cpu_constraint_poly_addr::cpu_constraint_poly;
+    use cpu_addr::cpu_constraint_poly_7;
 
     use cpu_addr::cpu_oods_7;
     use cpu_addr::layout_specific_7::{layout_specific_init, prepare_for_oods_check, safe_div};
@@ -1009,7 +1009,7 @@ module verifier_addr::stark_verifier_7 {
             return false
         };
 
-        let composition_from_trace_value = cpu_constraint_poly::fallback(
+        let composition_from_trace_value = cpu_constraint_poly_7::fallback(
             slice(ctx, MM_CONSTRAINT_POLY_ARGS_START, MM_CONSTRAINT_POLY_ARGS_END)
         );
         let claimed_composition = fadd(

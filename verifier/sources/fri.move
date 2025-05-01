@@ -24,8 +24,13 @@ module verifier_addr::fri {
         fri
     }
 
-    public(friend) fun update_fri(signer: &signer, fri: vector<u256>) {
-        move_to(signer, Fri { fri });
+    public(friend) fun update_fri(signer: &signer, fri: vector<u256>) acquires Fri {
+        let signer_addr = address_of(signer);
+        if (exists<Fri>(signer_addr)) {
+            *borrow_global_mut<Fri>(signer_addr) = Fri { fri };
+        } else {
+            move_to(signer, Fri { fri });
+        }
     }
 
     #[view]
