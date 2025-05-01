@@ -567,7 +567,7 @@ module verifier_addr::stark_verifier_6 {
         set_el(ctx, MM_FRI_LAST_LAYER_PTR, (last_layer_ptr as u256));
     }
 
-    public(friend) fun verify_proof(
+    public fun verify_proof(
         signer: &signer,
         proof_params: &vector<u256>,
         proof: &mut vector<u256>,
