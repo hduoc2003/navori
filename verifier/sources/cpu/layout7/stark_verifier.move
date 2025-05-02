@@ -311,6 +311,23 @@ module verifier_addr::stark_verifier_7 {
         cpu_oods_7::init_data_type(signer);
     }
 
+    public(friend) fun reset_data(signer: &signer) acquires VpCheckpoint, CtxCache, CfflCheckpoint, OccCheckpoint {
+        let signer_addr = address_of(signer);
+        if (exists<VpCheckpoint>(signer_addr)) {
+            move_from<VpCheckpoint>(signer_addr);
+        };
+        if (exists<CtxCache>(signer_addr)) {
+            move_from<CtxCache>(signer_addr);
+        };
+        if (exists<CfflCheckpoint>(signer_addr)) {
+            move_from<CfflCheckpoint>(signer_addr);
+        };
+        if (exists<OccCheckpoint>(signer_addr)) {
+            move_from<OccCheckpoint>(signer_addr);
+        };
+        cpu_oods_7::reset_data(signer);
+    }
+
     // Adjusts the query indices and generates evaluation points for each query index.
     // The operations above are independent but we can save gas by combining them as both
     // operations require us to iterate the queries array.
@@ -549,7 +566,7 @@ module verifier_addr::stark_verifier_7 {
         set_el(ctx, MM_FRI_LAST_LAYER_PTR, (last_layer_ptr as u256));
     }
 
-    public(friend) fun verify_proof(
+    public fun verify_proof(
         signer: &signer,
         proof_params: &vector<u256>,
         proof: &mut vector<u256>,
