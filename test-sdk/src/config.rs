@@ -6,7 +6,6 @@ use config::{Config as ConfigLoader, File, FileFormat};
 use serde::Deserialize;
 use std::str::FromStr;
 use std::sync::Arc;
-use crate::verify_fri::{ComputeNextLayer, RegisterFactVerifyFri};
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct Config {
