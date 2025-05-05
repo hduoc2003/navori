@@ -5,5 +5,5 @@
 
 private_key = "0x3d31ef06ed8003c3a85125b6e6287967a7b80a3e4367ccf2649e7acd574e4261"
 node_url = "https://rpc.ankr.com/premium-http/aptos_testnet/090ce4fe42402bd2cb87f94bda2e24e72aef10d47de3bc8b9eb0a53bad7a5175/v1"
-verifier_address = "72f53b7701bcfe443aadd552632db863b7a5801835d5c189322ae435bece15d2"
+verifier_address = "6f3839301c526cb1bd60a1f85d6deb7e23c6af808dff62014a15567e95d2e045"
 chain_id = "testnet"

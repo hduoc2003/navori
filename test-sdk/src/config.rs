@@ -3,7 +3,7 @@ use aptos_sdk::types::account_address::AccountAddress;
 use aptos_sdk::types::chain_id::ChainId;
 use aptos_sdk::types::LocalAccount;
 use config::{Config as ConfigLoader, File, FileFormat};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use std::str::FromStr;
 use std::sync::Arc;
 
@@ -32,37 +32,21 @@ pub struct AppConfig {
     pub chain_id: ChainId,
 }
 
-#[derive(Default, Debug)]
+#[derive(Default, Debug, Serialize)]
 pub struct GlobalStat {
-    pub verify_merkle: Vec<VerifyMerkleStat>,
-    pub verify_fri: Vec<VerifyFriStat>,
+    pub verify_merkle: Vec<StatInfo>,
+    pub verify_fri: Vec<StatInfo>,
     pub rcmp: Vec<StatInfo>,
     pub vpar: VparStat,
 }
 
-#[derive(Default, Debug)]
+#[derive(Default, Debug, Serialize)]
 pub struct StatInfo {
     pub time: f32,
     pub gas_used: u64
 }
 
-#[derive(Default, Debug)]
-pub struct VerifyMerkleStat {
-    pub msc_verify_merkle: StatInfo,
-    pub mv_verify_merkle: StatInfo,
-    pub register_fact_verify_merkle: StatInfo
-}
-
-#[derive(Default, Debug)]
-pub struct VerifyFriStat {
-    pub verify_fri: StatInfo,
-    pub init_fri_group: StatInfo,
-    pub compute_next_layer: StatInfo,
-    pub verify_merkle: StatInfo,
-    pub register_fact_verify_fri: StatInfo
-}
-
-#[derive(Default, Debug)]
+#[derive(Default, Debug, Serialize)]
 pub struct VparStat {
     pub prepush_task_metadata: StatInfo,
     pub prepush_data: StatInfo,
