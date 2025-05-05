@@ -12,7 +12,7 @@ use std::time::Duration;
 
 use crate::config::{AppConfig, StatInfo};
 
-use crate::utils::{build_and_submit, get_event_from_transaction, retry_until_success};
+use crate::utils::{build_and_submit, get_event_from_transaction};
 use serde::Deserialize;
 use tokio::time::Instant;
 

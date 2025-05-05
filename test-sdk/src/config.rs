@@ -6,7 +6,6 @@ use config::{Config as ConfigLoader, File, FileFormat};
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
 use std::sync::Arc;
-use crate::verify_fri::{ComputeNextLayer, RegisterFactVerifyFri};
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct Config {
@@ -35,8 +34,8 @@ pub struct AppConfig {
 
 #[derive(Default, Debug, Serialize)]
 pub struct GlobalStat {
-    pub verify_merkle: Vec<VerifyMerkleStat>,
-    pub verify_fri: Vec<VerifyFriStat>,
+    pub verify_merkle: Vec<StatInfo>,
+    pub verify_fri: Vec<StatInfo>,
     pub rcmp: Vec<StatInfo>,
     pub vpar: VparStat,
 }
@@ -45,22 +44,6 @@ pub struct GlobalStat {
 pub struct StatInfo {
     pub time: f32,
     pub gas_used: u64
-}
-
-#[derive(Default, Debug, Serialize)]
-pub struct VerifyMerkleStat {
-    pub msc_verify_merkle: StatInfo,
-    pub mv_verify_merkle: StatInfo,
-    pub register_fact_verify_merkle: StatInfo
-}
-
-#[derive(Default, Debug, Serialize)]
-pub struct VerifyFriStat {
-    pub verify_fri: StatInfo,
-    pub init_fri_group: StatInfo,
-    pub compute_next_layer: StatInfo,
-    pub verify_merkle: StatInfo,
-    pub register_fact_verify_fri: StatInfo
 }
 
 #[derive(Default, Debug, Serialize)]

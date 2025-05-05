@@ -4,9 +4,9 @@ use std::time::{Duration, SystemTime};
 
 use anyhow::anyhow;
 use aptos_sdk::move_types::u256::U256;
-use aptos_sdk::rest_client::aptos_api_types::{Event, MoveType, TransactionInfo};
-use aptos_sdk::rest_client::{Client, Transaction};
+use aptos_sdk::rest_client::aptos_api_types::{Event, MoveType};
 use aptos_sdk::rest_client::error::RestError;
+use aptos_sdk::rest_client::{Client, Transaction};
 use aptos_sdk::transaction_builder::TransactionBuilder;
 use aptos_sdk::types::chain_id::ChainId;
 use aptos_sdk::types::transaction::{SignedTransaction, TransactionPayload};

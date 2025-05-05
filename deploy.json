@@ -52,17 +52,17 @@
     {
       "module_path": "verifier",
       "address_name": "verifier_addr",
-      "deployed_at": "46c4ecafccbff2213346757bc4b90e0948949a7a9cf33dabc6e6354610f0afe1",
+      "deployed_at": "2e88397957d97a90d01f0dbf665b357b9e7053a9efd416beb9a981a69caeda50",
       "tx_info": [
         {
-          "transaction_hash": "0x1e61e96423bf371728063fa2eb0daee9841b6973f8487aaacce19f9c7e8e9832",
-          "gas_used": 25744,
+          "transaction_hash": "0x18f293ce78708a5b0cd971a2868512556a58328c0d409c64675462ba648098ef",
+          "gas_used": 23475,
           "gas_unit_price": 100,
           "sender": "447027b48d8a8926e3b7a666bad2c0dda66e61777fd47b8a490bcbe7cc5e8415",
-          "sequence_number": 4159,
+          "sequence_number": 5247,
           "success": true,
-          "timestamp_us": 1746187988361596,
-          "version": 6704533929,
+          "timestamp_us": 1746420623701374,
+          "version": 6707824183,
           "vm_status": "Executed successfully"
         }
       ]
