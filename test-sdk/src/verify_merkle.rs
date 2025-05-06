@@ -6,11 +6,7 @@ use std::fs::File;
 use std::io::BufReader;
 use std::str::FromStr;
 
-use crate::utils::build_and_submit;
-use aptos_sdk::move_types::identifier::Identifier;
-use aptos_sdk::move_types::language_storage::ModuleId;
-use aptos_sdk::move_types::value::serialize_values;
-use aptos_sdk::types::transaction::{EntryFunction, TransactionPayload};
+use crate::utils::{build_and_submit, build_payload};
 use log::info;
 use tokio::time::Instant;
 
@@ -19,20 +15,17 @@ pub async fn verify_merkle(
     verify_merkle_input: VerifyMerkleTransactionInput,
 ) -> anyhow::Result<StatInfo> {
     let t = Instant::now();
-    let payload = TransactionPayload::EntryFunction(EntryFunction::new(
-        ModuleId::new(
-            config.verifier_address,
-            Identifier::new("merkle_statement_contract")?,
-        ),
-        Identifier::new("verify_merkle")?,
-        vec![],
-        serialize_values(&vec![
+    let (size, payload) = build_payload(
+        config.verifier_address,
+        "merkle_statement_contract",
+        "verify_merkle",
+        &vec![
             verify_merkle_input.merkle_view,
             verify_merkle_input.initial_merkle_queue,
             verify_merkle_input.height,
             verify_merkle_input.expected_root,
-        ]),
-    ));
+        ],
+    )?;
 
     let transaction = build_and_submit(
         &config.client,
@@ -54,6 +47,7 @@ pub async fn verify_merkle(
     let stat = StatInfo {
         time: t.elapsed().as_secs_f32(),
         gas_used: transaction_info.gas_used.0,
+        size,
     };
     Ok(stat)
 }

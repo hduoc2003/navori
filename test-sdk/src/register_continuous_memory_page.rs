@@ -1,9 +1,6 @@
-use aptos_sdk::move_types::identifier::Identifier;
-use aptos_sdk::move_types::language_storage::ModuleId;
 use aptos_sdk::move_types::u256::U256;
-use aptos_sdk::move_types::value::{serialize_values, MoveValue};
+use aptos_sdk::move_types::value::MoveValue;
 use aptos_sdk::rest_client::aptos_api_types::MoveType;
-use aptos_sdk::types::transaction::{EntryFunction, TransactionPayload};
 use log::info;
 use std::fs::File;
 use std::io::BufReader;
@@ -12,7 +9,7 @@ use std::time::Duration;
 
 use crate::config::{AppConfig, StatInfo};
 
-use crate::utils::{build_and_submit, get_event_from_transaction};
+use crate::utils::{build_and_submit, build_payload, get_event_from_transaction};
 use serde::Deserialize;
 use tokio::time::Instant;
 
@@ -21,10 +18,6 @@ pub async fn register_continuous_memory_page(
     data: ContinuousMemoryPage,
 ) -> anyhow::Result<StatInfo> {
     let t = Instant::now();
-    let mut stat = StatInfo {
-        time: 0.0,
-        gas_used: 0,
-    };
     let mut values = vec![];
     for e in &data.values {
         values.push(MoveValue::U256(U256::from_str(e)?));
@@ -46,8 +39,8 @@ pub async fn register_continuous_memory_page(
     //         let txs = txs.clone();
     //         let client = config.client.clone();
     //         async move {
-    //             client.submit_batch(&txs).await 
-    //         } 
+    //             client.submit_batch(&txs).await
+    //         }
     //     }, 3, Duration::from_millis(2000)).await?.into_inner();
     //     txs.
     //     for tx in txs {
@@ -55,20 +48,22 @@ pub async fn register_continuous_memory_page(
     //     }
     // }
 
-    let payload = TransactionPayload::EntryFunction(EntryFunction::new(
-        ModuleId::new(
-            config.verifier_address,
-            Identifier::new("memory_page_fact_registry")?,
-        ),
-        Identifier::new("register_continuous_memorypage")?,
-        vec![],
-        serialize_values(&vec![
+    let (size, payload) = build_payload(
+        config.verifier_address,
+        "memory_page_fact_registry",
+        "register_continuous_memorypage",
+        &vec![
             MoveValue::U256(U256::from_str(&data.start_addr)?),
             MoveValue::Vector(values),
             MoveValue::U256(U256::from_str(&data.z)?),
             MoveValue::U256(U256::from_str(&data.alpha)?),
-        ]),
-    ));
+        ],
+    )?;
+    let mut stat = StatInfo {
+        time: 0.0,
+        gas_used: 0,
+        size,
+    };
     loop {
         let transaction = build_and_submit(
             &config.client,
@@ -78,7 +73,7 @@ pub async fn register_continuous_memory_page(
             Some(10),
             Some(Duration::from_millis(3000)),
         )
-            .await?;
+        .await?;
 
         let transaction_info = transaction.transaction_info()?;
         stat.gas_used += transaction_info.gas_used.0;
@@ -104,7 +99,10 @@ pub async fn register_continuous_memory_page(
     Ok(stat)
 }
 
-pub async fn register_continuous_page_batch(config: &AppConfig, data: MemoryPageEntries) -> anyhow::Result<Vec<StatInfo>> {
+pub async fn register_continuous_page_batch(
+    config: &AppConfig,
+    data: MemoryPageEntries,
+) -> anyhow::Result<Vec<StatInfo>> {
     let mut stats = vec![];
     for memory in data.memory_page_entries {
         stats.push(register_continuous_memory_page(config, memory).await?);

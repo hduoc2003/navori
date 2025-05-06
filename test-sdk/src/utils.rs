@@ -3,17 +3,39 @@ use std::str::FromStr;
 use std::time::{Duration, SystemTime};
 
 use anyhow::anyhow;
+use aptos_sdk::move_types::identifier::Identifier;
+use aptos_sdk::move_types::language_storage::ModuleId;
 use aptos_sdk::move_types::u256::U256;
+use aptos_sdk::move_types::value::{serialize_values, MoveValue};
 use aptos_sdk::rest_client::aptos_api_types::{Event, MoveType};
 use aptos_sdk::rest_client::error::RestError;
 use aptos_sdk::rest_client::{Client, Transaction};
 use aptos_sdk::transaction_builder::TransactionBuilder;
+use aptos_sdk::types::account_address::AccountAddress;
 use aptos_sdk::types::chain_id::ChainId;
-use aptos_sdk::types::transaction::{SignedTransaction, TransactionPayload};
+use aptos_sdk::types::transaction::{EntryFunction, SignedTransaction, TransactionPayload};
 use aptos_sdk::types::LocalAccount;
 use tokio::time::sleep;
 
-pub fn build_transaction(
+pub fn build_payload(verifier_address: AccountAddress, module: &str, func: &str, params: &Vec<MoveValue>) -> anyhow::Result<(f64, TransactionPayload)> {
+    let payload_bytes = serialize_values(params);
+    let mut size = 0u64;
+    for x in &payload_bytes {
+        size += x.len() as u64;
+    }
+    let size = (size as f64) / 1024.0;
+    Ok((size, TransactionPayload::EntryFunction(EntryFunction::new(
+        ModuleId::new(
+            verifier_address,
+            Identifier::new(module)?,
+        ),
+        Identifier::new(func)?,
+        vec![],
+        payload_bytes,
+    ))))
+}
+
+fn build_transaction(
     payload: TransactionPayload,
     sender: &LocalAccount,
     chain_id: ChainId,
