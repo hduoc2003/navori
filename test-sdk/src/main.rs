@@ -55,58 +55,67 @@ async fn main() -> anyhow::Result<()> {
     let mut verify_merkle_stat = StatInfo {
         time: 0.0,
         gas_used: 0,
+        size: 0.0,
     };
     println!("verify merkle");
     for (i, x) in stat.verify_merkle.iter().enumerate() {
-        println!("[{}], [{:.2}], [{}],", i + 1, x.time, x.gas_used);
+        println!("[{}], [{:.2}], [{}], [{:.2}],", i + 1, x.time, x.gas_used, x.size);
         verify_merkle_stat.gas_used += x.gas_used;
         verify_merkle_stat.time += x.time;
+        verify_merkle_stat.size += x.size;
     }
     dbg!(&verify_merkle_stat);
 
     let mut verify_fri_stat = StatInfo {
         time: 0.0,
         gas_used: 0,
+        size: 0.0,
     };
     println!("verify fri");
     for (i, x) in stat.verify_fri.iter().enumerate() {
-        println!("[{}], [{:.2}], [{}],", i + 1, x.time, x.gas_used);
+        println!("[{}], [{:.2}], [{}], [{:.2}],", i + 1, x.time, x.gas_used, x.size);
         verify_fri_stat.time += x.time;
         verify_fri_stat.gas_used += x.gas_used;
+        verify_fri_stat.size += x.size;
     }
     dbg!(&verify_fri_stat);
 
     let mut rcmp_stat = StatInfo {
         time: 0.0,
         gas_used: 0,
+        size: 0.0,
     };
 
     println!("rcmp");
     for (i, x) in stat.rcmp.iter().enumerate() {
-        println!("[{}], [{:.2}], [{}],", i + 1, x.time, x.gas_used);
+        println!("[{}], [{:.2}], [{}], [{:.2}],", i + 1, x.time, x.gas_used, x.size);
         rcmp_stat.gas_used += x.gas_used;
         rcmp_stat.time += x.time;
+        rcmp_stat.size += x.size;
     }
     dbg!(&rcmp_stat);
 
     let mut vpar_stat = StatInfo {
         time: 0.0,
         gas_used: 0,
+        size: 0.0,
     };
 
     println!("vpar");
     println!(
-        "[{:.2}], [{}],",
-        stat.vpar.prepush_task_metadata.time, stat.vpar.prepush_task_metadata.gas_used
+        "[{:.2}], [{}], [{:.2}],",
+        stat.vpar.prepush_task_metadata.time, stat.vpar.prepush_task_metadata.gas_used, stat.vpar.prepush_task_metadata.size
     );
     vpar_stat.gas_used += stat.vpar.prepush_task_metadata.gas_used;
     vpar_stat.time += stat.vpar.prepush_task_metadata.time;
+    vpar_stat.size += stat.vpar.prepush_task_metadata.size;
     println!(
-        "[{:.2}], [{}],",
-        stat.vpar.prepush_data.time, stat.vpar.prepush_data.gas_used
+        "[{:.2}], [{}], [{:.2}],",
+        stat.vpar.prepush_data.time, stat.vpar.prepush_data.gas_used, stat.vpar.prepush_data.size
     );
     vpar_stat.gas_used += stat.vpar.prepush_data.gas_used;
     vpar_stat.time += stat.vpar.prepush_data.time;
+    vpar_stat.size += stat.vpar.prepush_data.size;
     for (i, x) in stat.vpar.vpar.iter().enumerate() {
         println!("[{}], [{:.2}], [{}],", i + 1, x.time, x.gas_used,);
         vpar_stat.gas_used += x.gas_used;
@@ -130,6 +139,13 @@ async fn main() -> anyhow::Result<()> {
             + verify_fri_stat.gas_used
             + rcmp_stat.gas_used
             + vpar_stat.gas_used
+    );
+    println!(
+        "total input size: {}",
+        verify_merkle_stat.size
+            + verify_fri_stat.size
+            + rcmp_stat.size
+            + vpar_stat.size
     );
     Ok(())
 }

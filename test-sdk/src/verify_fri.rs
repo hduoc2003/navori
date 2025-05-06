@@ -2,36 +2,30 @@ use std::fs::File;
 use std::io::BufReader;
 
 use crate::config::{AppConfig, StatInfo};
-use crate::utils::build_and_submit;
-use aptos_sdk::move_types::identifier::Identifier;
-use aptos_sdk::move_types::language_storage::ModuleId;
+use crate::utils::{build_and_submit, build_payload};
 use aptos_sdk::move_types::u256::U256;
-use aptos_sdk::move_types::value::{serialize_values, MoveValue};
-use aptos_sdk::types::transaction::{EntryFunction, TransactionPayload};
+use aptos_sdk::move_types::value::MoveValue;
 use serde::Deserialize;
 use std::str::FromStr;
 use tokio::time::Instant;
 
 pub async fn verify_fri(
     config: &AppConfig,
-    verify_merkle_input: VerifyFriTransactionInput,
+    verify_fri_input: VerifyFriTransactionInput,
 ) -> anyhow::Result<StatInfo> {
     let t = Instant::now();
-    let payload = TransactionPayload::EntryFunction(EntryFunction::new(
-        ModuleId::new(
-            config.verifier_address,
-            Identifier::new("fri_statement_contract")?,
-        ),
-        Identifier::new("verify_fri")?,
-        vec![],
-        serialize_values(&vec![
-            verify_merkle_input.proof,
-            verify_merkle_input.fri_queue,
-            verify_merkle_input.evaluation_point,
-            verify_merkle_input.fri_step_size,
-            verify_merkle_input.expected_root,
-        ]),
-    ));
+    let (size, payload) = build_payload(
+        config.verifier_address,
+        "fri_statement_contract",
+        "verify_fri",
+        &vec![
+            verify_fri_input.proof,
+            verify_fri_input.fri_queue,
+            verify_fri_input.evaluation_point,
+            verify_fri_input.fri_step_size,
+            verify_fri_input.expected_root,
+        ],
+    )?;
     let transaction = build_and_submit(
         &config.client,
         payload,
@@ -46,6 +40,7 @@ pub async fn verify_fri(
     Ok(StatInfo {
         time: t.elapsed().as_secs_f32(),
         gas_used: transaction_info.gas_used.0,
+        size,
     })
 }
 

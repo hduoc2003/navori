@@ -43,7 +43,8 @@ pub struct GlobalStat {
 #[derive(Default, Debug, Serialize)]
 pub struct StatInfo {
     pub time: f32,
-    pub gas_used: u64
+    pub gas_used: u64,
+    pub size: f64,
 }
 
 #[derive(Default, Debug, Serialize)]

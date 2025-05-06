@@ -1,5 +1,5 @@
 use crate::config::{AppConfig, StatInfo, VparStat};
-use crate::utils::{build_and_submit, get_event_from_transaction};
+use crate::utils::{build_and_submit, build_payload, get_event_from_transaction};
 use anyhow::ensure;
 use aptos_sdk::move_types::identifier::Identifier;
 use aptos_sdk::move_types::language_storage::ModuleId;
@@ -20,39 +20,42 @@ pub async fn verify_proof_and_register(
 
     // Prepush task metadata transaction
     let t = Instant::now();
-    let payload = TransactionPayload::EntryFunction(EntryFunction::new(
-        ModuleId::new(config.verifier_address, Identifier::new(module_name)?),
-        Identifier::new("prepush_task_metadata")?,
-        vec![],
-        serialize_values(&vec![MoveValue::Vector(
-            data.task_metadata
-                .iter()
-                .map(|v| MoveValue::U256(*v))
-                .collect(),
-        )]),
-    ));
+    let (size, payload) = build_payload(
+        config.verifier_address,
+        module_name,
+        "prepush_task_metadata",
+        &vec![
+            MoveValue::Vector(
+                data.task_metadata
+                    .iter()
+                    .map(|v| MoveValue::U256(*v))
+                    .collect(),
+            )
+        ],
+    )?;
     let tx = build_and_submit(
-            &config.client,
-            payload,
-            &config.account,
-            config.chain_id,
-            Some(5),
-            None,
-        )
-        .await?;
-        let tx_info = tx.transaction_info()?;
+        &config.client,
+        payload,
+        &config.account,
+        config.chain_id,
+        Some(5),
+        None,
+    )
+    .await?;
+    let tx_info = tx.transaction_info()?;
     let prepush_task_metadata_stat = StatInfo {
         time: t.elapsed().as_secs_f32(),
         gas_used: tx_info.gas_used.0,
+        size,
     };
 
     // Prepush data to verify proof and register transaction
     let t = Instant::now();
-    let payload = TransactionPayload::EntryFunction(EntryFunction::new(
-        ModuleId::new(config.verifier_address, Identifier::new(module_name)?),
-        Identifier::new("prepush_data_to_verify_proof_and_register")?,
-        vec![],
-        serialize_values(&vec![
+    let (size, payload) = build_payload(
+        config.verifier_address,
+        module_name,
+        "prepush_data_to_verify_proof_and_register",
+        &vec![
             MoveValue::Vector(
                 data.proof_params
                     .iter()
@@ -67,21 +70,22 @@ pub async fn verify_proof_and_register(
                     .collect(),
             ),
             MoveValue::U256(data.cairo_verifier_id),
-        ]),
-    ));
+        ],
+    )?;
     let tx = build_and_submit(
-            &config.client,
-            payload,
-            &config.account,
-            config.chain_id,
-            Some(5),
-            None,
-        )
-        .await?;
-        let tx_info = tx.transaction_info()?;
+        &config.client,
+        payload,
+        &config.account,
+        config.chain_id,
+        Some(5),
+        None,
+    )
+    .await?;
+    let tx_info = tx.transaction_info()?;
     let prepush_data_stat = StatInfo {
         time: t.elapsed().as_secs_f32(),
         gas_used: tx_info.gas_used.0,
+        size,
     };
 
     // Verify_proof_and_register
@@ -108,6 +112,7 @@ pub async fn verify_proof_and_register(
         vpar_stat.push(StatInfo {
             time: t.elapsed().as_secs_f32(),
             gas_used: tx_info.gas_used.0,
+            size: 0.0,
         });
         if i == cnt_loop {
             let event = get_event_from_transaction(
@@ -139,11 +144,12 @@ pub async fn verify_proof_and_register(
         Some(5),
         None,
     )
-        .await?;
+    .await?;
     let tx_info = tx.transaction_info()?;
     let reset_data_stat = StatInfo {
         time: t.elapsed().as_secs_f32(),
         gas_used: tx_info.gas_used.0,
+        size: 0.0,
     };
 
     Ok(VparStat {
