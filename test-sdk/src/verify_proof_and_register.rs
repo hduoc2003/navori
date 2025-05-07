@@ -30,21 +30,7 @@ pub async fn verify_proof_and_register(
                     .iter()
                     .map(|v| MoveValue::U256(*v))
                     .collect(),
-            ),
-            MoveValue::Vector(
-                data.proof_params
-                    .iter()
-                    .map(|v| MoveValue::U256(*v))
-                    .collect(),
-            ),
-            MoveValue::Vector(data.proof.iter().map(|v| MoveValue::U256(*v)).collect()),
-            MoveValue::Vector(
-                data.cairo_aux_input
-                    .iter()
-                    .map(|v| MoveValue::U256(*v))
-                    .collect(),
-            ),
-            MoveValue::U256(data.cairo_verifier_id),
+            )
         ],
     )?;
     let tx = build_and_submit(
